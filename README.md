@@ -26,6 +26,11 @@ Currently supports data fetching from the following exchanges:
 - Whitebit
 - Exmo
 - Poloniex
+- Phemex
+- Hollaex
+- Timex
+- Bitopro
+- Bitrue
 
 ## ⚙️ Features
 

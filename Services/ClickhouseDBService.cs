@@ -277,6 +277,7 @@ namespace ArbitrageScanner.Services
                     *,
                     ROW_NUMBER() OVER (PARTITION BY trading_pair ORDER BY profit_percent DESC) AS row_num
                 FROM profit_calculation
+                WHERE buy_exchange <> 'gate'
             )
             WHERE row_num = 1
             ORDER BY profit_percent DESC
@@ -402,15 +403,9 @@ namespace ArbitrageScanner.Services
                     FROM (
                         SELECT {string.Join(", ", fieldsWithoutDeletedFlag)} 
                         FROM {tableName} FINAL 
-                        WHERE symbol = {{symbol:String}} 
-                            AND buy_exchange = {{buy_exchange:String}} 
-                            AND sell_exchange = {{sell_exchange:String}} 
-                            AND Is_deleted = 0
-                    )";
-
-                command.AddParameter("symbol", trade.Pair.Symbol);
-                command.AddParameter("buy_exchange", trade.Pair.BuyExchange);
-                command.AddParameter("sell_exchange", trade.Pair.SellExchange);
+                        WHERE symbol = '{trade.Pair.Symbol}' 
+                            AND buy_exchange = '{trade.Pair.BuyExchange}' 
+                            AND sell_exchange = '{trade.Pair.SellExchange}')";
 
                 await command.ExecuteNonQueryAsync();
                 return true;

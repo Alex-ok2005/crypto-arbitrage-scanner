@@ -1,6 +1,7 @@
 ﻿using ArbitrageScanner.Interfaces;
 using ArbitrageScanner.Models;
 using ccxt;
+//using ccxt.pro;
 using NLog;
 using System.Data;
 
@@ -34,7 +35,12 @@ namespace ArbitrageScanner.Services
             { "kucoin", (0.001m, new kucoin(), new()) },
             { "whitebit", (0.001m, new whitebit(), new()) },
             { "exmo", (0.001m, new exmo(), new()) },
-            { "poloniex",(0.002m, new poloniex(), new()) }
+            { "poloniex",(0.002m, new poloniex(), new()) },
+            { "phemex",(0.001m, new phemex(), new()) },
+            { "hollaex",(0.001m, new hollaex(), new()) },
+            { "timex",(0.001m, new timex(), new()) },
+            { "bitopro",(0.001m, new bitopro(), new()) },
+            { "bitrue",(0.001m, new bitrue(), new()) }
         };
         public ExchangeService(Logger _logger)
         {

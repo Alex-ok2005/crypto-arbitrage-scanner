@@ -22,11 +22,11 @@ namespace ArbitrageScanner.Services
             WhiteListSymbols = [],
             BlackListExchange = [],
             BlackListSymbols = [],
-            MinVolume = 100000,
+            MinVolume = 90000,
             MinProfitPercentage = 0,
             MaxProfitPercentage = 100,
-            UpdateLagSeconds = 180,
-            CollectionIntervalMs = 180000,
+            UpdateLagSeconds = 300,
+            CollectionIntervalMs = 120000,
             DelayBetweenRequestsMs = 1000
         };
 

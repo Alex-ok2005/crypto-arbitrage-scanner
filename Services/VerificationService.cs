@@ -152,7 +152,7 @@ namespace ArbitrageScanner.Services
         {
             try
             {
-                List<ProfitTrade> tradesToProcess;
+                IOrderedEnumerable<ProfitTrade> tradesToProcess;
 
                 lock (_locker)
                 {
@@ -160,7 +160,7 @@ namespace ArbitrageScanner.Services
                         .Where(p => p.Pair.Symbol == orderBook.Symbol &&
                             (p.State is ProfitTradesState.Checking or ProfitTradesState.ReChecking) &&
                             (p.Pair.BuyExchange == exchangeId || p.Pair.SellExchange == exchangeId))
-                        .ToList();
+                        .OrderBy(p => p.EventTime);
                 }
 
                 foreach (var trade in tradesToProcess)
