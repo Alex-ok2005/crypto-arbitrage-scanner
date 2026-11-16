@@ -65,11 +65,12 @@ Currently supports data fetching from the following exchanges:
    - compares `ask` price on one exchange with `bid` on another;
    - checks for a shared network;
    - considers both sending and receiving fees.
-3. If the following condition is met: `(bid_B × (1 – fee_B)) – (ask_A × (1 + fee_A)) > порог` the situation is considered arbitrage.
+3. If the following condition is met: `(bid_B × (1 – fee_B)) – (ask_A × (1 + fee_A)) > threshold` the situation is considered arbitrage.
 4. A potential deal event is generated and passed to the **Verifier Service**.
 5. **Verifier Service** monitors the opportunity:
+   - walks the order book depth level by level (asks on the buy exchange vs. bids on the sell exchange) to calculate executable volume, average prices and real profit;
    - if the opportunity worsens, it is cancelled;
-   - if confirmed, the user is notified.
+   - if confirmed, the deal is saved to ClickHouse and logged.
 
 ## ⚡ Quick Start
 
@@ -88,6 +89,7 @@ docker run -d \
   --name clickhouse-server \
   -p 8123:8123 \
   -p 9000:9000 \
+  -e CLICKHOUSE_PASSWORD=xxx \
   clickhouse/clickhouse-server:latest
 ```
 
@@ -108,13 +110,13 @@ Specify the connection parameters in `appsettings.json`:
 #### Option A – Locally without Docker:
 
 ```bash
-git clone https://github.com/yourusername/crypto-arbitrage-scanner.git
+git clone https://github.com/Alex-ok2005/crypto-arbitrage-scanner.git
 cd crypto-arbitrage-scanner
 
 dotnet restore
 dotnet build --configuration Release
 
-dotnet run --project src/CollectorService
+dotnet run --configuration Release
 ```
 
 #### Option B – Using Docker Compose:
@@ -122,24 +124,23 @@ dotnet run --project src/CollectorService
 Create a `docker-compose.yml` file:
 
 ```yaml
-version: "3.8"
 services:
   clickhouse:
     image: clickhouse/clickhouse-server:latest
     ports:
       - "8123:8123"
       - "9000:9000"
+    environment:
+      - CLICKHOUSE_PASSWORD=xxx
     volumes:
       - clickhouse-data:/var/lib/clickhouse
 
-  collector:
-    build: ./src/CollectorService
+  scanner:
+    build: .
     depends_on:
       - clickhouse
     environment:
-      - CLICKHOUSE__Host=clickhouse
-      - CLICKHOUSE__HttpPort=8123
-      - CLICKHOUSE__TcpPort=9000
+      - ConnectionStrings__Clickhouse=Host=clickhouse;Protocol=http;Port=8123;Username=default;Password=xxx
 
 volumes:
   clickhouse-data:
@@ -148,7 +149,7 @@ volumes:
 Start the project:
 
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 
 ---
@@ -158,14 +159,16 @@ docker-compose up --build
 1. Install [.NET SDK 8.0+](https://dotnet.microsoft.com/download).
 2. Clone the repository:
    
-```bash    
-git clone https://github.com/yourusername/crypto-arbitrage-scanner.git cd crypto-arbitrage-scanner
+```bash
+git clone https://github.com/Alex-ok2005/crypto-arbitrage-scanner.git
+cd crypto-arbitrage-scanner
 ```
 
 3. Build the project:
    
 ```bash
-dotnet restore dotnet build
+dotnet restore
+dotnet build
 ```
 
 ## 🤝 Contributing
@@ -176,5 +179,3 @@ Want to contribute? You're welcome!
 2. Create a new branch: `feature/your-feature`.
 3. Make changes and add tests.
 4. Open a Pull Request.
-
-Please make sure to follow the [code of conduct](CODE_OF_CONDUCT.md).
