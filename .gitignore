@@ -186,6 +186,7 @@ _pkginfo.txt
 !*.[Cc]ache/
 
 # Others
+arbitragescanner.tar
 ClientBin/
 ~$*
 *~
